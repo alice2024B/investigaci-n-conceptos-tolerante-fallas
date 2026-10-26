@@ -48,7 +48,6 @@
 16. Aprendizajes obtenidos
 17. Conclusión
 18. Bibliografía
-19. Evidencias del proyecto
 
 ---
 
@@ -265,10 +264,18 @@ La estructura del flujo principal es:
 
 Cada nodo cumple una función específica dentro del proceso.
 
+La siguiente captura muestra los nodos conectados del proyecto.
+
+![Flujo principal del proyecto](capturas/myWorkflow.png)
+
 1. Schedule Trigger inicia el flujo según el horario configurado.
+
 2. HTTP Request consulta Open-Meteo.
-3. Edit Fields selecciona y organiza los datos necesarios.
+
+3. Edit Fields selecciona y organiza los datos necesarios. 
+
 4. AI Agent utiliza Gemini para generar el resumen y dispone de una herramienta MCP conectada.
+
 5. Gmail envía la salida del agente por correo electrónico.
 
 ## 7.2. Servidor MCP del clima
@@ -277,6 +284,8 @@ La estructura del servidor MCP es:
 
 `MCP Server Trigger → Call n8n Workflow Tool`
 
+![estructura del servidor MCP](capturas/servidor-MCP.PNG)
+
 Este flujo permite acceder a la herramienta que ejecuta la consulta meteorológica auxiliar.
 
 ## 7.3. Herramienta MCP - Datos del clima
@@ -284,6 +293,8 @@ Este flujo permite acceder a la herramienta que ejecuta la consulta meteorológi
 La estructura del flujo auxiliar es:
 
 `When Executed by Another Workflow → HTTP Request`
+
+![estructura de la herraminta MCP](capturas/herramienta-MCP.PNG)
 
 Este flujo recibe la solicitud de ejecución, consulta la API y devuelve la respuesta meteorológica.
 
@@ -308,6 +319,8 @@ Esta configuración permite programar la consulta meteorológica sin tener que i
 Durante el desarrollo también se realizó una ejecución manual para revisar el comportamiento del flujo completo. Posteriormente, el flujo quedó publicado y se recibió el correo de notificación del clima de las 8:00 a. m.
 
 Para que las ejecuciones programadas continúen funcionando, el entorno de n8n y las conexiones necesarias deben permanecer disponibles.
+
+![Configuración del horario](capturas/schedule-trigger.png)
 
 ## 8.2. HTTP Request: consulta de Open-Meteo
 
@@ -336,6 +349,10 @@ La API devuelve una estructura de datos que los nodos posteriores pueden utiliza
 
 Aunque la solicitud incluye varios campos, el nodo Edit Fields selecciona los valores necesarios para el resumen configurado.
 
+![Configuración de HTTP Request](capturas/http-request.PNG)
+
+![Configuración de HTTP Request](capturas/respuesta-API.PNG)
+
 ## 8.3. Edit Fields: organización de los datos
 
 Después de obtener la respuesta de Open-Meteo, el nodo Edit Fields selecciona y organiza los campos que se utilizarán en el flujo principal.
@@ -358,6 +375,8 @@ En los campos de temperatura máxima y mínima se utiliza `[0]` para recuperar e
 
 Este nodo permite entregar al agente una estructura de datos más sencilla y centrada en la información necesaria para el resumen.
 
+![Configuración de Edit Fields](capturas/edit-fields.PNG) 
+
 ## 8.4. AI Agent y Gemini: generación del resumen
 
 El nodo AI Agent se utiliza para generar el texto que se enviará por correo electrónico. Está configurado para trabajar con Gemini y cuenta con una herramienta MCP conectada.
@@ -370,6 +389,8 @@ La generación del resumen depende de los datos de entrada, las instrucciones co
 
 Durante las pruebas se comprobó que el agente produjera una salida que pudiera utilizarse en el siguiente nodo.
 
+![Configuración del AI Agent](capturas/ai-agent.PNG)  
+
 ## 8.5. MCP Client Tool: conexión con la herramienta
 
 MCP Client Tool está conectado al AI Agent para que el agente disponga de una herramienta externa.
@@ -379,6 +400,8 @@ Esta herramienta se relaciona con el servidor MCP del clima, que permite acceder
 La conexión permite que el agente solicite información mediante MCP cuando corresponda.
 
 Es importante distinguir entre tener una herramienta conectada y comprobar que se utilizó en una ejecución específica. Para demostrar una llamada concreta a la herramienta, se debe revisar el registro de ejecución correspondiente.
+
+![mcp cliente tool](capturas/mcp-client-tool.PNG)
 
 ## 8.6. Gmail: envío del reporte
 
@@ -397,6 +420,8 @@ De esta manera, el correo contiene la salida generada por el agente y no un text
 La cuenta de Gmail se autorizó para las operaciones necesarias de lectura, redacción y envío. No se concedió un permiso independiente para eliminar todos los correos.
 
 Durante las pruebas, el correo llegó correctamente. Además, recibí la notificación del clima de las 8:00 a. m., lo que confirmó que el proceso de envío funcionó durante esa ejecución.
+
+![Configuración de Gmail](capturas/configuración-gmail.PNG)
 
 # 9. Desarrollo del servidor MCP
 
@@ -489,6 +514,8 @@ Se realizó una ejecución manual del flujo principal para comprobar que los nod
 
 Durante esta prueba, los nodos finalizaron correctamente y se recibió el correo generado por la automatización.
 
+![prueba del flujo principal](capturas/ejecuciónpublished.PNG) 
+
 ## 12.2. Prueba de la API meteorológica
 
 Se revisó la respuesta del nodo HTTP Request para verificar que Open-Meteo proporcionara información meteorológica.
@@ -506,6 +533,8 @@ El agente dispone de instrucciones para utilizar la herramienta MCP y comunicar 
 Se verificó que Gmail utilizara la salida del agente como cuerpo del mensaje.
 
 El correo de prueba llegó correctamente. Además, la notificación del clima de las 8:00 a. m. llegó, lo que permitió comprobar que el flujo principal pudo completar el proceso de envío durante la ejecución correspondiente.
+
+![prueba del envio de gmail](capturas/correo-recibido.PNG)
 
 ## 12.5. Prueba de la herramienta MCP
 
