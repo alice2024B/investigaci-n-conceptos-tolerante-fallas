@@ -1,0 +1,88 @@
+{
+  "name": "servidor mcp clima",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "cf8702a0-b5da-40a8-9f31-06c87487d6e0",
+        "instructions": "Servidor MCP para consultar herramientas relacionadas con el pronóstico del clima de Guadalajara, Jalisco."
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2.1,
+      "position": [
+        -48,
+        0
+      ],
+      "id": "65d269c7-8699-4948-8117-63c9eeb3bc21",
+      "name": "MCP Server Trigger",
+      "webhookId": "cf8702a0-b5da-40a8-9f31-06c87487d6e0",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "description": "Consulta el pronóstico del clima de Guadalajara, Jalisco. Obtiene la temperatura actual, la humedad relativa y las temperaturas máxima y mínima previstas para que el agente de inteligencia artificial pueda elaborar un resumen del clima.",
+        "workflowId": {
+          "__rl": true,
+          "value": "bS9hFQy10PxnQCHZ",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/bS9hFQy10PxnQCHZ",
+          "cachedResultName": "herramienta mcp"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [
+            "ciudad"
+          ],
+          "schema": [
+            {
+              "id": "ciudad",
+              "displayName": "ciudad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        96,
+        208
+      ],
+      "id": "a34f430e-a6d7-45a2-9c45-8351f88da3f1",
+      "name": "Call 'herramienta mcp'"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Call 'herramienta mcp'": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "cd2702d6-d23b-49cc-af8f-196b60e7caa7",
+  "meta": {
+    "instanceId": "b049c540803c12afff60ba041b328402f0768fcbacecd23cf7f88a69d8003dfb"
+  },
+  "nodeGroups": [],
+  "id": "wIOBNovDHhMiekVL",
+  "tags": []
+}

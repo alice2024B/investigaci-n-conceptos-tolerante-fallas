@@ -1,0 +1,240 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f84435ae-450d-40c4-88d9-43c8969a76e0",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=20.6597&longitude=-103.3496&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=America%2FMexico_City",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "8a4cec6d-177a-491d-86d6-03486f4aaa13",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4a29b0e1-fd9c-492c-b1e1-992b452dc5ac",
+              "name": "Ciudad",
+              "value": "Guadalajara, Jalisco",
+              "type": "string"
+            },
+            {
+              "id": "6cdba176-974f-40cf-8465-b39013b011fa",
+              "name": "temperatura",
+              "value": "={{ $json.current.temperature_2m }}",
+              "type": "string"
+            },
+            {
+              "id": "35651598-1b24-47b9-a2ee-7b7bf17fcc4b",
+              "name": "humedad",
+              "value": "={{ $json.current.relative_humidity_2m }}",
+              "type": "string"
+            },
+            {
+              "id": "8a9cbcc4-26b0-4f12-bfe0-9851740e4b65",
+              "name": "temperatura_maxima",
+              "value": "={{ $json.daily.temperature_2m_max[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "b59b7e1c-ef6a-4158-b707-1f32acd31073",
+              "name": "temperatura_minina",
+              "value": "={{ $json.daily.temperature_2m_min[0] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        448,
+        0
+      ],
+      "id": "10617072-f84d-4229-a730-36cc53d0ad32",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analiza los siguientes datos del pronóstico del clima de Guadalajara, Jalisco:\n\nCiudad: {{ $json.ciudad }}\nTemperatura actual: {{ $json.temperatura }} °C\nHumedad relativa: {{ $json.humedad }} %\nTemperatura máxima prevista: {{ $json.temperatura_maxima }} °C\nTemperatura mínima prevista: {{ $json.temperatura_minima }} °C\n\nRedacta un resumen breve y claro en español. Incluye las temperaturas, explica las condiciones de manera sencilla y ofrece una recomendación práctica para el día. No inventes datos que no se proporcionan.\nAntes de redactar el resumen, utiliza la herramienta MCP disponible para consultar los datos del clima de Guadalajara. Si la herramienta MCP no está disponible o falla, indícalo claramente y no afirmes que la utilizaste.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        656,
+        0
+      ],
+      "id": "3d5e9855-be93-44a4-b512-4f10b3b07411",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        656,
+        272
+      ],
+      "id": "97e69a9a-8fc3-4d03-b27e-f7b49852ca36",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "lMkjUKkWmh4yqC4Y",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "endpointUrl": "https://nuevo-proyecto.app.n8n.cloud/mcp/cf8702a0-b5da-40a8-9f31-06c87487d6e0",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.4,
+      "position": [
+        800,
+        272
+      ],
+      "id": "ebf04436-ea99-4061-80f2-8e7a2e5fed70",
+      "name": "MCP Client"
+    },
+    {
+      "parameters": {
+        "sendTo": "alice13.morales@gmail.com",
+        "subject": "Pronóstico diario del clima de Guadalajara",
+        "emailType": "text",
+        "message": "={{ $('AI Agent').item.json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1024,
+        0
+      ],
+      "id": "e8315e7b-0e54-4224-a9fb-b602af722940",
+      "name": "Send a message",
+      "webhookId": "c5e8fc5f-704b-45cf-9228-41e3d1c46c4c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "7CjuPBQuPWloChaX",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "95d8df4c-d42e-47e8-96ab-19cafb96139e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b049c540803c12afff60ba041b328402f0768fcbacecd23cf7f88a69d8003dfb"
+  },
+  "nodeGroups": [],
+  "id": "7uVtJUrKr6NUHtD3",
+  "tags": []
+}
