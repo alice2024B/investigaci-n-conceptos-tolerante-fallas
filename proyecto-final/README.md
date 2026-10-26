@@ -441,6 +441,8 @@ En este proyecto se configuró con transporte HTTP Streamable y autenticación `
 
 Esta configuración permitió realizar las pruebas en el entorno utilizado. Sin embargo, no debe considerarse adecuada para exponer el servidor públicamente sin controles de seguridad adicionales.
 
+![mcp server trigger](capturas/config-servidor-MCP.PNG)
+
 ## 9.2. Call n8n Workflow Tool
 
 Este nodo permite invocar otro flujo de n8n como herramienta.
