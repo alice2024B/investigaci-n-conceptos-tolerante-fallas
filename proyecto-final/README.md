@@ -514,7 +514,7 @@ Se realizó una ejecución manual del flujo principal para comprobar que los nod
 
 Durante esta prueba, los nodos finalizaron correctamente y se recibió el correo generado por la automatización.
 
-![prueba del flujo principal](capturas/ejecución y published.PNG) 
+![prueba del flujo principal](capturas/ejecución-published.PNG) 
 
 ## 12.2. Prueba de la API meteorológica
 
